@@ -70,7 +70,7 @@ jobs:
           protocol:   ftp                             # ou ftps
           port:       21                              # ajustez si besoin
           local-dir:  ./                              # dossier local à uploader
-          server-dir: /axialead                       # chemin distant
+          server-dir: /axialead/                       # chemin distant
           security:   loose                       # pour ignorer la vérif. TLS
           # exclude: |
           #   .git*
