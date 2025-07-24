@@ -3,8 +3,6 @@ name: CI/CD via FTP
 on:
   push:
     branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
   workflow_dispatch:
 
 jobs:
@@ -13,7 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [ user-service, course-service, payment-service, subscription-service, stats-service, notification-service, webapp ]
+        service: [
+          user-service, course-service, payment-service,
+          subscription-service, stats-service, notification-service,
+          webapp
+        ]
     defaults:
       run:
         working-directory: ${{ matrix.service == 'webapp' && 'webapp' || format('services/{0}', matrix.service) }}
@@ -39,11 +41,14 @@ jobs:
       - name: Lint with flake8
         run: flake8 .
 
-      - name: Run Tests
-        if: exists('tests')
+      - name: Run Tests if present
         run: |
-          pip install pytest
-          pytest --maxfail=1 --disable-warnings -q
+          if [ -d tests ]; then
+            pip install pytest
+            pytest --maxfail=1 --disable-warnings -q
+          else
+            echo "No tests/ directory — skipping pytest"
+          fi
 
   deploy:
     name: Deploy via FTP
