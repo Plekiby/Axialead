@@ -64,9 +64,14 @@ jobs:
       - name: Deploy to AlwaysData via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.1
         with:
-          server: ${{ secrets.AD_FTP_HOST }}
-          username: ${{ secrets.AD_FTP_USER }}
-          password: ${{ secrets.AD_FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: /axialead
-          git-ftp-args: --insecure
+          server:     ${{ secrets.AD_FTP_HOST }}      # ex. ftp.alwaysdata.net
+          username:   ${{ secrets.AD_FTP_USER }}      # votre user FTP
+          password:   ${{ secrets.AD_FTP_PASSWORD }}  # votre mot de passe FTP
+          protocol:   ftp                             # ou ftps
+          port:       21                              # ajustez si besoin
+          local-dir:  ./                              # dossier local à uploader
+          server-dir: /axialead                       # chemin distant
+          security:   insecure                        # pour ignorer la vérif. TLS
+          # exclude: |
+          #   .git*
+          #   README.md
