@@ -71,7 +71,7 @@ jobs:
           port:       21                              # ajustez si besoin
           local-dir:  ./                              # dossier local à uploader
           server-dir: /axialead                       # chemin distant
-          security:   insecure                        # pour ignorer la vérif. TLS
+          security:   loose                       # pour ignorer la vérif. TLS
           # exclude: |
           #   .git*
           #   README.md
