@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploy with SSH & rsync
-        uses: appleboy/ssh-action@0.1.9
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host:     ${{ secrets.AD_SSH_HOST }}
           username: ${{ secrets.AD_SSH_USER }}
@@ -73,5 +73,5 @@ jobs:
             mkdir -p ~/www/axialead
             # Synchronisation locale → distante
             rsync -avz --delete \
-              -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+              -e "ssh -o StrictHostKeyChecking=no" \
               ./ ~/www/axialead/
