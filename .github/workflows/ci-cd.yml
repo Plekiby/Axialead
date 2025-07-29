@@ -69,7 +69,7 @@ jobs:
           key:      ${{ secrets.AD_SSH_PRIVATE_KEY }}
           port:     22
           script: |
-            # Crée le dossier web dans le home du user
+            # Crée le dossier web dans le home du  user
             mkdir -p "$HOME/www/axialead"
             # Synchronisation locale → distante
             rsync -avz --delete \
