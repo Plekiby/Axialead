@@ -69,6 +69,8 @@ jobs:
           key: ${{ secrets.AD_SSH_PRIVATE_KEY }}     
           port: 22
           script: |
+            # Crée le dossier distant s’il n’existe pas
+            mkdir -p /home/${{ secrets.AD_SSH_USER }}/axialead
             # Synchronisation locale → distante
             rsync -avz --delete \
               -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
