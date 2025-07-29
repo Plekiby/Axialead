@@ -52,7 +52,7 @@ jobs:
           else
             echo "No tests/ directory — skipping pytest"
           fi
-          
+
   deploy:
     name: Deploy via SFTP
     runs-on: ubuntu-latest
@@ -61,27 +61,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.AD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 22 ${{ secrets.AD_SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Install lftp
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -qq lftp
-
-      - name: Sync to AlwaysData via SFTP
-        run: |
-          lftp -u "${{ secrets.AD_SSH_USER }}","${{ secrets.AD_SSH_PRIVATE_KEY }}" \
-              sftp://${{ secrets.AD_SSH_HOST }} -e "
-            mirror --reverse \
-                  --delete \
-                  --only-newer \
-                  ./ /home/${{ secrets.AD_SSH_USER }}/axialead/ ;
-            bye
-          "
+      - name: Deploy with SSH & rsync
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.AD_SSH_HOST }}           
+          username: ${{ secrets.AD_SSH_USER }}       
+          key: ${{ secrets.AD_SSH_PRIVATE_KEY }}     
+          port: 22
+          script: |
+            # Synchronisation locale → distante
+            rsync -avz --delete \
+              -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+              ./ /home/${{ secrets.AD_SSH_USER }}/axialead/
 
 
