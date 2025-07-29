@@ -54,24 +54,32 @@ jobs:
           fi
 
   deploy:
-    name: Deploy via FTP
-    runs-on: ubuntu-latest
-    needs: lint-test
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v3
+  name: Deploy via SFTP
+  runs-on: ubuntu-latest
+  needs: lint-test
+  if: github.ref == 'refs/heads/main'
+  steps:
+    - uses: actions/checkout@v3
 
-      - name: Deploy to AlwaysData via FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.1
-        with:
-          server:     ${{ secrets.AD_FTP_HOST }}      # ex. ftp.alwaysdata.net
-          username:   ${{ secrets.AD_FTP_USER }}      # votre user FTP
-          password:   ${{ secrets.AD_FTP_PASSWORD }}  # votre mot de passe FTP
-          protocol:   ftp                             # ou ftps
-          port:       21                              # ajustez si besoin
-          local-dir:  ./                              # dossier local à uploader
-          server-dir: /axialead/                       # chemin distant
-          security:   loose                       # pour ignorer la vérif. TLS
-          # exclude: |
-          #   .git*
-          #   README.md
+    - name: Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.AD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -p 22 ${{ secrets.AD_SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Install lftp
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -qq lftp
+
+    - name: Sync to AlwaysData via SFTP
+      run: |
+        lftp -u "${{ secrets.AD_SSH_USER }}","${{ secrets.AD_SSH_PRIVATE_KEY }}" \
+             sftp://${{ secrets.AD_SSH_HOST }} -e "
+          mirror --reverse \
+                 --delete \
+                 --only-newer \
+                 ./ /home/${{ secrets.AD_SSH_USER }}/axialead/ ;
+          bye
+        "
