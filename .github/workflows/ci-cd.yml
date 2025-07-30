@@ -66,18 +66,17 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.AD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 22 ${{ secrets.AD_SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H -p 22 ${{ secrets.AD_SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy with rsync
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host:     ${{ secrets.AD_SSH_HOST }}
-          username: ${{ secrets.AD_SSH_USER }}
-          key:      ${{ secrets.AD_SSH_PRIVATE_KEY }}
-          port:     22
-          script: |
-            mkdir -p "$HOME/www/axialead"
-            rsync -avz --delete \
-              -e "ssh -o StrictHostKeyChecking=no" \
-              ./ "$HOME/www/axialead/"
+      - name: Install rsync & ssh client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq rsync openssh-client
+
+      - name: Deploy via rsync
+        run: |
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+            ./ ${{ secrets.AD_SSH_USER }}@${{ secrets.AD_SSH_HOST }}:~/www/axialead/
+
 
