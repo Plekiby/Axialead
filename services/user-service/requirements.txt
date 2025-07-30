@@ -1,0 +1,8 @@
+Flask>=2.0
+PyMySQL
+SQLAlchemy
+alembic
+passlib[bcrypt]
+PyJWT
+marshmallow
+bcrypt

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: axialead-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: Ght92vtt?
+      MYSQL_DATABASE: axialead
+      MYSQL_USER: axialead
+      MYSQL_PASSWORD: Ght92vtt?
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: axialead-pma
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: axialead
+      PMA_PASSWORD: Ght92vtt?
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data:
